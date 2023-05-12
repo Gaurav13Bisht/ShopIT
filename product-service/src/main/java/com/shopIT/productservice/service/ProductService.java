@@ -10,7 +10,8 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
-@Service
+@Service    // Used to represent a class as business logic handling class and also mark this as @Component so spring IOC container
+            // create and inject this class's object wherever it's needed like in controller class using @Autowired
 @Slf4j     // Given by lombok for logging purpose
 public class ProductService {
 

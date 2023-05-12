@@ -1,4 +1,5 @@
-package com.shopIT.productservice.dto;
+package com.shopIT.orderservice.dto;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,14 +10,13 @@ import lombok.NoArgsConstructor;
 @Data   //This will be the equivalent of @Getters, @Setters, @ToString, @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder   // To implement Builder Design - search this
-public class ProductDtoRequest {
-
-    private String product_name;
-
-    private String description;
+@Builder   // To implement Builder Design
+public class OrderLineItemsDtoRequest {
+    private String skuCode;
 
     private Integer price;
+
+    private Integer quantity;
 }
 
 // We should make Request and Response classes for each model because it is a good practice since if we need to
