@@ -48,8 +48,6 @@ public class InventoryService {
 
         log.info("Added/updated in inventory with id:" + inventoryEntity.getId());
 
-
-
         return inventoryEntity.getId();
     }
 }
