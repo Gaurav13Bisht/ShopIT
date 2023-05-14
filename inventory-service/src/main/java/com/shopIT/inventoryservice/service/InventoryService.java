@@ -26,14 +26,28 @@ public class InventoryService {
     }
 
     public Integer addInInventory(InventoryDtoRequest inventoryDtoRequest) {
-        InventoryEntity inventoryEntity = InventoryEntity.builder()
-                .quantity(inventoryDtoRequest.getQuantity())
-                .skuCode(inventoryDtoRequest.getSkuCode())
-                .build();
+
+        Optional<InventoryEntity> inventoryEntityOptional = inventoryRepo.findBySkuCode(inventoryDtoRequest.getSkuCode());
+
+        InventoryEntity inventoryEntity = null;
+
+        if(inventoryEntityOptional.isEmpty()){
+            inventoryEntity = InventoryEntity.builder()
+                    .quantity(inventoryDtoRequest.getQuantity())
+                    .skuCode(inventoryDtoRequest.getSkuCode())
+                    .build();
+        }
+        else{
+            inventoryEntity = inventoryEntityOptional.get();
+            Integer prevQuantity = inventoryEntity.getQuantity();
+
+            inventoryEntity.setQuantity(prevQuantity + inventoryDtoRequest.getQuantity());
+        }
 
         inventoryRepo.save(inventoryEntity);
 
         log.info("Added in inventory with id:" + inventoryEntity.getId());
+
 
         return inventoryEntity.getId();
     }
