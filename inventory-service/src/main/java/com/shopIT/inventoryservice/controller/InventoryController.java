@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/inventory")
 public class InventoryController {
@@ -15,11 +17,12 @@ public class InventoryController {
     @Autowired
     private InventoryService inventoryService;
 
-    @GetMapping("/quantity/{skuCode}")
-    public ResponseEntity<Integer> quantityInStock(@PathVariable String skuCode){
-        Integer quantity = inventoryService.quantityInStock(skuCode);
+    //Using @RequestParam for multiple inputs
+    @GetMapping("/quantity")
+    public ResponseEntity<List<InventoryDtoResponse>> quantityInStock(@RequestParam List<String> skuCode){
+        List<InventoryDtoResponse> inventoryDtoResponseList = inventoryService.quantityInStock(skuCode);
 
-        return ResponseEntity.status(HttpStatus.OK).body(quantity);
+        return ResponseEntity.status(HttpStatus.OK).body(inventoryDtoResponseList);
     }
 
     @PostMapping("/addInInventory")

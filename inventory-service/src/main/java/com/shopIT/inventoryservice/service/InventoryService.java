@@ -1,12 +1,14 @@
 package com.shopIT.inventoryservice.service;
 
 import com.shopIT.inventoryservice.dto.InventoryDtoRequest;
+import com.shopIT.inventoryservice.dto.InventoryDtoResponse;
 import com.shopIT.inventoryservice.entity.InventoryEntity;
 import com.shopIT.inventoryservice.repository.InventoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -16,13 +18,22 @@ public class InventoryService {
     @Autowired
     private InventoryRepository inventoryRepo;
 
-    public Integer quantityInStock(String skuCode) {
-        Optional<InventoryEntity> inventoryEntityOptional = inventoryRepo.findBySkuCode(skuCode);
+    public List<InventoryDtoResponse> quantityInStock(List<String> skuCode) {
 
-        if(inventoryEntityOptional.isEmpty())
-            return 0;
-        else
-            return inventoryEntityOptional.get().getQuantity();
+        // When we have multiple values of a field, and we need all the records for each field value then we can use
+        // findBy<fieldName>In() function provided by Spring data which works same as mysql's IN
+
+        // NOTE: When declaring new method provided by SpringData, make sure you set the correct return type of the
+        //       method in the repository interface
+        List<InventoryDtoResponse> inventoryDtoResponseList = inventoryRepo.findBySkuCodeIn(skuCode).stream()
+                .map(inventoryEntity -> InventoryDtoResponse.builder()
+                        .skuCode(inventoryEntity.getSkuCode())
+                        .id(inventoryEntity.getId())
+                        .quantity(inventoryEntity.getQuantity())
+                        .build())
+                .toList();
+
+        return inventoryDtoResponseList;
     }
 
     public Integer addInInventory(InventoryDtoRequest inventoryDtoRequest) {
@@ -31,12 +42,15 @@ public class InventoryService {
 
         InventoryEntity inventoryEntity = null;
 
+        // If no inventory exists which contains this product then we create a new inventory with given product
         if(inventoryEntityOptional.isEmpty()){
             inventoryEntity = InventoryEntity.builder()
                     .quantity(inventoryDtoRequest.getQuantity())
                     .skuCode(inventoryDtoRequest.getSkuCode())
                     .build();
         }
+        // If the product with skuCode already exists in any inventory then we will not create new inventory for this
+        // and will simply update the quantity of already existing inventory with the product
         else{
             inventoryEntity = inventoryEntityOptional.get();
             Integer prevQuantity = inventoryEntity.getQuantity();
