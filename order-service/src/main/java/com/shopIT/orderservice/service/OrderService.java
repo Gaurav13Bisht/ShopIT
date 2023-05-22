@@ -11,6 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
+
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -22,6 +23,9 @@ import java.util.stream.Stream;
 public class OrderService {
     @Autowired
     private OrderRepository orderRepo;
+
+    @Autowired
+    private WebClient.Builder webClientBuilder;
 
     public Integer placeOrder(OrderDtoRequest orderDtoRequest) {
 
@@ -38,11 +42,15 @@ public class OrderService {
                 .map(orderLineItem -> orderLineItem.getSkuCode()).toList();
 
         // Alternative of RestTemplate and introduced in Spring 5.
-        WebClient webClient = WebClient.create();
+        // If we do not want load balancing then we can directly create webClient like below without making config class
+//        WebClient webClient = WebClient.create();
 
-        ResponseEntity<List<InventoryDtoResponse>> inventoryDtoResponseREntity = webClient
+
+
+        ResponseEntity<List<InventoryDtoResponse>> inventoryDtoResponseREntity = webClientBuilder.build()
                 .get()
-                .uri("http://localhost:2334/shopIT/inventory/quantity", uriBuilder -> uriBuilder
+//                .uri("http://localhost:2334/shopIT/inventory/quantity", uriBuilder -> uriBuilder
+                .uri("http://inventory-service/shopIT/inventory/quantity", uriBuilder -> uriBuilder
                         .queryParam("skuCode", skuCode)
                         .build())
                 .retrieve()

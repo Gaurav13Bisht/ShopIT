@@ -10,14 +10,22 @@
         <module name="product-service" />
         <module name="order-service" />
         <module name="inventory-service" />
+        <module name="discovery-server" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="prod-service" target="17" />
+      <module name="temp-service" target="17" />
+    </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="discovery-server" options="-parameters" />
       <module name="inventory-service" options="-parameters" />
       <module name="order-service" options="-parameters" />
+      <module name="prod-service" options="-parameters" />
       <module name="product-service" options="-parameters" />
+      <module name="temp-service" options="-parameters" />
     </option>
   </component>
 </project>
