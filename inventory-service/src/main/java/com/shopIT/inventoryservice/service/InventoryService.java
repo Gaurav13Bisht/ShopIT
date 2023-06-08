@@ -1,13 +1,20 @@
 package com.shopIT.inventoryservice.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.shopIT.inventoryservice.dto.InventoryDtoRequest;
 import com.shopIT.inventoryservice.dto.InventoryDtoResponse;
 import com.shopIT.inventoryservice.entity.InventoryEntity;
 import com.shopIT.inventoryservice.repository.InventoryRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Base64;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -64,4 +71,5 @@ public class InventoryService {
 
         return inventoryEntity.getId();
     }
+
 }

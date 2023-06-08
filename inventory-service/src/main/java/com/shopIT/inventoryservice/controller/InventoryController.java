@@ -26,10 +26,8 @@ public class InventoryController {
     }
 
     @PostMapping("/addInInventory")
-    public ResponseEntity<String> addInInventory(@RequestBody InventoryDtoRequest inventoryDtoRequest){
-
+    public ResponseEntity<String> addInInventory(@RequestBody InventoryDtoRequest inventoryDtoRequest, @RequestHeader("Authorization") String token){
         Integer id = inventoryService.addInInventory(inventoryDtoRequest);
-
         return ResponseEntity.status(HttpStatus.OK).body("Added in inventory with ID: " + id);
     }
 }
