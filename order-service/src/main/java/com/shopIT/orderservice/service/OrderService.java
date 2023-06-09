@@ -4,6 +4,7 @@ import com.shopIT.orderservice.dto.*;
 import com.shopIT.orderservice.entity.OrderEntity;
 import com.shopIT.orderservice.entity.OrderLineItemsEntity;
 import com.shopIT.orderservice.repository.OrderRepository;
+import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
@@ -27,6 +28,7 @@ public class OrderService {
     @Autowired
     private WebClient.Builder webClientBuilder;
 
+    @CircuitBreaker(name="inventoryCall", fallbackMethod = "placeOrderFallBack")
     public Integer placeOrder(OrderDtoRequest orderDtoRequest) {
 
         // First check if the products with ordered quantity are in stock or not.
@@ -105,6 +107,11 @@ public class OrderService {
 
         return orderEntity.getId();
     }
+
+    public Integer placeOrderFallBack(OrderDtoRequest orderDtoRequest, RuntimeException runtimeException) {
+        return -2;
+    }
+
 
     public OrderLineItemsEntity orderLIDtoReqToOLIEntity(OrderLineItemsDtoRequest orderLineItemsDtoRequest){
         OrderLineItemsEntity orderLineItemsEntity = OrderLineItemsEntity.builder()

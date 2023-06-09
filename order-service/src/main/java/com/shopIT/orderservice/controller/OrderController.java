@@ -20,7 +20,11 @@ public class OrderController {
 
         Integer order_id = orderService.placeOrder(orderDtoRequest);
 
-        return ResponseEntity.status(HttpStatus.CREATED).body("Placed the order with ID: " + order_id);
+        if(order_id == -2){
+            return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Inventory service is not available right now. Please Try again later !!");
+        }
+        else
+            return ResponseEntity.status(HttpStatus.CREATED).body("Placed the order with ID: " + order_id);
     }
 
     @GetMapping("/getOrderDetails/{order_id}")
