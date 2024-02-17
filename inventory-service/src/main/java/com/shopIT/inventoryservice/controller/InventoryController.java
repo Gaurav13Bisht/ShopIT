@@ -14,8 +14,12 @@ import java.util.List;
 @RequestMapping("/inventory")
 public class InventoryController {
 
+    private final InventoryService inventoryService;
+
     @Autowired
-    private InventoryService inventoryService;
+    public InventoryController(InventoryService inventoryService) {
+        this.inventoryService = inventoryService;
+    }
 
     //Using @RequestParam for multiple inputs
     @GetMapping("/quantity")

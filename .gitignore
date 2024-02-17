@@ -36,3 +36,6 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/product-service/target/
+/order-service/target/
+/inventory-service/target/

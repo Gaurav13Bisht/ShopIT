@@ -12,26 +12,29 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/orders")
 public class OrderController {
 
+    private final OrderService orderService;
+
     @Autowired
-    private OrderService orderService;
+    public OrderController(OrderService orderService) {
+        this.orderService = orderService;
+    }
 
     @PostMapping("/placeOrder")
     public ResponseEntity<String> placeOrder(@RequestBody OrderDtoRequest orderDtoRequest){
 
-        Integer order_id = orderService.placeOrder(orderDtoRequest);
-
-        if(order_id == -2){
+        Integer orderId = orderService.placeOrder(orderDtoRequest);
+        if(orderId == -2){
             return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body("Inventory service is not available right now. Please Try again later !!");
         }
-        else
-            return ResponseEntity.status(HttpStatus.CREATED).body("Placed the order with ID: " + order_id);
+        else {
+            return ResponseEntity.status(HttpStatus.CREATED).body("Placed the order with ID: " + orderId);
+        }
     }
 
-    @GetMapping("/getOrderDetails/{order_id}")
-    public ResponseEntity<OrderDtoResponse> getOrderDetails(@PathVariable Integer order_id){
+    @GetMapping("/getOrderDetails/{orderId}")
+    public ResponseEntity<OrderDtoResponse> getOrderDetails(@PathVariable Integer orderId){
 
-        OrderDtoResponse orderDtoResponse = orderService.getOrderDetails(order_id);
-
+        OrderDtoResponse orderDtoResponse = orderService.getOrderDetails(orderId);
         return ResponseEntity.status(HttpStatus.OK).body(orderDtoResponse);
     }
 }

@@ -12,12 +12,11 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder   // To implement Builder Design
 public class OrderLineItemsDtoRequest {
+
     private String skuCode;
-
     private Integer price;
-
     private Integer quantity;
-}
 
+}
 // We should make Request and Response classes for each model because it is a good practice since if we need to
 // hide some data or give additional back to the postman/client.

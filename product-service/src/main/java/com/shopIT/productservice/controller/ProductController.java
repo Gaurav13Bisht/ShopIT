@@ -14,13 +14,17 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
 
-    @Autowired
     private ProductService prodService;
+
+    @Autowired
+    public ProductController(ProductService prodService) {
+        this.prodService = prodService;
+    }
 
     @PostMapping("/addProduct")
     public ResponseEntity<String> addProduct(@RequestBody ProductDtoRequest productDtoRequest){
-        int product_id = prodService.addProduct(productDtoRequest);
-        return ResponseEntity.status(HttpStatus.CREATED).body("Added the product with ID: " + product_id);
+        int productId = prodService.addProduct(productDtoRequest);
+        return ResponseEntity.status(HttpStatus.CREATED).body("Added the product with ID: " + productId);
     }
 
     @GetMapping("/getAllProducts")

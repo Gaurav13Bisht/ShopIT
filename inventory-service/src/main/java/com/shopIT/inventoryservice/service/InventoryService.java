@@ -1,20 +1,12 @@
 package com.shopIT.inventoryservice.service;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonMappingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.shopIT.inventoryservice.dto.InventoryDtoRequest;
 import com.shopIT.inventoryservice.dto.InventoryDtoResponse;
 import com.shopIT.inventoryservice.entity.InventoryEntity;
 import com.shopIT.inventoryservice.repository.InventoryRepository;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.mapping.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Base64;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,8 +14,12 @@ import java.util.Optional;
 @Slf4j
 public class InventoryService {
 
+    private final InventoryRepository inventoryRepo;
+
     @Autowired
-    private InventoryRepository inventoryRepo;
+    public InventoryService(InventoryRepository inventoryRepo){
+        this.inventoryRepo = inventoryRepo;
+    }
 
     public List<InventoryDtoResponse> quantityInStock(List<String> skuCode) {
 
@@ -32,15 +28,14 @@ public class InventoryService {
 
         // NOTE: When declaring new method provided by SpringData, make sure you set the correct return type of the
         //       method in the repository interface
-        List<InventoryDtoResponse> inventoryDtoResponseList = inventoryRepo.findBySkuCodeIn(skuCode).stream()
+
+        return inventoryRepo.findBySkuCodeIn(skuCode).stream()
                 .map(inventoryEntity -> InventoryDtoResponse.builder()
                         .skuCode(inventoryEntity.getSkuCode())
                         .id(inventoryEntity.getId())
                         .quantity(inventoryEntity.getQuantity())
                         .build())
                 .toList();
-
-        return inventoryDtoResponseList;
     }
 
     public Integer addInInventory(InventoryDtoRequest inventoryDtoRequest) {

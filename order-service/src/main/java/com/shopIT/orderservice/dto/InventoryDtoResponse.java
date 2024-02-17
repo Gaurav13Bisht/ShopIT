@@ -13,8 +13,7 @@ import lombok.NoArgsConstructor;
 public class InventoryDtoResponse {
 
         private Integer id;
-
         private String skuCode;
-
         private Integer quantity;
+
 }

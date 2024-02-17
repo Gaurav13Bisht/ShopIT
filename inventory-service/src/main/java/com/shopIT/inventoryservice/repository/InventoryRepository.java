@@ -1,6 +1,5 @@
 package com.shopIT.inventoryservice.repository;
 
-import com.shopIT.inventoryservice.dto.InventoryDtoResponse;
 import com.shopIT.inventoryservice.entity.InventoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 

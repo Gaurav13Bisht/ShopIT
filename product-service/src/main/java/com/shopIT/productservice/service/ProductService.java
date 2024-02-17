@@ -6,6 +6,7 @@ import com.shopIT.productservice.entity.ProductEntity;
 import com.shopIT.productservice.repository.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -15,8 +16,13 @@ import java.util.List;
 @Slf4j     // Given by lombok for logging purpose
 public class ProductService {
 
+     private final ProductRepository productRepo;
+
     @Autowired
-    private ProductRepository productRepo;
+    public ProductService(ProductRepository productRepo) {
+        this.productRepo = productRepo;
+    }
+
     public Integer addProduct(ProductDtoRequest productDtoRequest){
         ProductEntity productEntity = productDtoReqToEntity(productDtoRequest);
 
@@ -26,6 +32,16 @@ public class ProductService {
         return productEntity.getProduct_id();
     }
 
+    // We use parameters for defining KEY in cacheable but if 0 parameters are there then we do:
+    // 1. FIXED Key: the key 'fixedXYZ' is a fixed key that is used for all calls to the getAllProducts method.
+    //             This means that regardless of how many times you call getAllProducts, the same cache key is used,
+    //             and the method results are cached under this key.
+    // 2. DYNAMIC Key based: the cache key #root.methodName is based on the name of the method (getAllProducts).
+    //              This means that each method with a different name will have its own cache entry, even if the method
+    //              takes no parameters. This can be useful if you have multiple methods with different names that take
+    //              no parameters, and you want to cache their results separately.
+//    @Cacheable(key = "'fixedXYZ'", value = "products")
+    @Cacheable(key = "#root.methodName", value = "products")
     public List<ProductDtoResponse> getAllProducts() {
         List<ProductEntity> productEntity = productRepo.findAll();
 
@@ -40,25 +56,21 @@ public class ProductService {
 
     public ProductEntity productDtoReqToEntity(ProductDtoRequest productDtoRequest){
         // Using builder() provided by lombok to implement conversion in less LOC
-        ProductEntity productEntity = ProductEntity.builder()
+        return ProductEntity.builder()
                 .product_name(productDtoRequest.getProduct_name())
                 .price(productDtoRequest.getPrice())
                 .description(productDtoRequest.getDescription())
                 .build();
-
-        return productEntity;
     }
 
 
     public ProductDtoResponse productEntityToDtoRes(ProductEntity productEntity){
         // Using builder() provided by lombok to implement conversion in less LOC
-        ProductDtoResponse productDtoResponse = ProductDtoResponse.builder()
+        return ProductDtoResponse.builder()
                 .product_id(productEntity.getProduct_id())
                 .product_name(productEntity.getProduct_name())
                 .price(productEntity.getPrice())
                 .description(productEntity.getDescription())
                 .build();
-
-        return productDtoResponse;
     }
 }

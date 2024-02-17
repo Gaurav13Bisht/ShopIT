@@ -1,5 +1,4 @@
 package com.shopIT.orderservice.service;
-import com.google.common.collect.Lists;
 
 import com.shopIT.orderservice.dto.*;
 import com.shopIT.orderservice.entity.OrderEntity;
@@ -8,12 +7,12 @@ import com.shopIT.orderservice.repository.OrderRepository;
 import io.github.resilience4j.circuitbreaker.annotation.CircuitBreaker;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
-
-
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,12 +22,18 @@ import java.util.stream.Stream;
             // create and inject this class's object wherever it's needed like in controller class using @Autowired
 @Slf4j     // Given by lombok for logging purpose
 public class OrderService {
-    @Autowired
+
     private OrderRepository orderRepo;
 
-    @Autowired
     private WebClient.Builder webClientBuilder;
 
+    @Autowired
+    public OrderService(OrderRepository orderRepo, WebClient.Builder webClientBuilder) {
+        this.orderRepo = orderRepo;
+        this.webClientBuilder = webClientBuilder;
+    }
+
+    // Ideally, We do not use caching in case of POST operation.
     @CircuitBreaker(name="inventoryCall", fallbackMethod = "placeOrderFallBack")
     public Integer placeOrder(OrderDtoRequest orderDtoRequest) {
 
@@ -47,7 +52,6 @@ public class OrderService {
         // Alternative of RestTemplate and introduced in Spring 5.
         // If we do not want load balancing then we can directly create webClient like below without making config class
 //        WebClient webClient = WebClient.create();
-
 
 
         ResponseEntity<List<InventoryDtoResponse>> inventoryDtoResponseREntity = webClientBuilder.build()
@@ -105,7 +109,6 @@ public class OrderService {
 
         log.info("Placed order with ID {}", orderEntity.getId());   //provided by @Slf4j
 
-
         return orderEntity.getId();
     }
 
@@ -114,20 +117,20 @@ public class OrderService {
     }
 
 
-    public OrderLineItemsEntity orderLIDtoReqToOLIEntity(OrderLineItemsDtoRequest orderLineItemsDtoRequest){
-        OrderLineItemsEntity orderLineItemsEntity = OrderLineItemsEntity.builder()
-                .skuCode(orderLineItemsDtoRequest.getSkuCode())
-                .quantity(orderLineItemsDtoRequest.getQuantity())
-                .price(orderLineItemsDtoRequest.getPrice())
-                .build();
-
-        return orderLineItemsEntity;
-    }
-
+    // Cacheable Annotation includes:.
+    // 1. key = "#orderId": Specifies the key used for caching. In this case, the orderId parameter value is
+    //           used as the key for caching the method's results. This means that if the method is called with the same
+    //           orderId value multiple times, the cached result will be returned instead of executing the method again.
+    // 2. value or cacheName: attributes serve the same purpose: they specify the name of the cache where the method's
+    //           results should be stored or retrieved. However, the value attribute is the preferred way to specify the cache name.
+    // In this case, Serialized OrderDtoResponse objects would be stored in "orders" cache with the key "orderId".
+    @Cacheable(key = "#orderId", value = "orders")
     public OrderDtoResponse getOrderDetails(Integer orderId) {
         Optional<OrderEntity> orderEntityOpt = orderRepo.findById(orderId);
-        if(orderEntityOpt.isEmpty())
+
+        if(orderEntityOpt.isEmpty()) {
             return null;
+        }
 
         OrderEntity orderEntity = orderEntityOpt.get();
 
@@ -145,12 +148,19 @@ public class OrderService {
     }
 
     public OrderLineItemsDtoResponse orderLIEntityToOLIDtoRes(OrderLineItemsEntity orderLineItemsEntity){
-
         return OrderLineItemsDtoResponse.builder()
                 .id(orderLineItemsEntity.getId())
                 .price(orderLineItemsEntity.getPrice())
                 .quantity(orderLineItemsEntity.getQuantity())
                 .skuCode(orderLineItemsEntity.getSkuCode())
+                .build();
+    }
+
+    public OrderLineItemsEntity orderLIDtoReqToOLIEntity(OrderLineItemsDtoRequest orderLineItemsDtoRequest){
+        return OrderLineItemsEntity.builder()
+                .skuCode(orderLineItemsDtoRequest.getSkuCode())
+                .quantity(orderLineItemsDtoRequest.getQuantity())
+                .price(orderLineItemsDtoRequest.getPrice())
                 .build();
     }
 }
