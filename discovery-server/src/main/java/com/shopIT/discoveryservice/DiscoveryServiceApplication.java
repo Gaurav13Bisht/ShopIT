@@ -1,4 +1,4 @@
-package com.shopIT.discoveryservice;
+package com.shopit.discoveryservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

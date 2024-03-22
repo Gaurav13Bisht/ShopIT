@@ -1,4 +1,4 @@
-package com.shopIT.apigateway.config;
+package com.shopit.apigateway.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

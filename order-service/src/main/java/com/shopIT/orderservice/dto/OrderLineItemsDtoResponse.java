@@ -1,5 +1,4 @@
-package com.shopIT.orderservice.dto;
-
+package com.shopit.orderservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,7 +11,8 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class OrderLineItemsDtoResponse implements Serializable {  // Implements Serializable because Redis supports serialised data only ie in the form of byte stream.
+public class OrderLineItemsDtoResponse implements Serializable { // Implements Serializable because Redis supports
+                                                                 // serialised data only ie in the form of byte stream.
 
     private Integer id;
     private String skuCode;

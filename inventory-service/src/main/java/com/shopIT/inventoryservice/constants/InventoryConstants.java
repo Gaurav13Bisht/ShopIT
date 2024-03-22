@@ -1,4 +1,4 @@
-package com.shopIT.inventoryservice.constants;
+package com.shopit.inventoryservice.constants;
 
 public class InventoryConstants {
     public static final String API_CHECK = "%s Token available, API call to %s !";

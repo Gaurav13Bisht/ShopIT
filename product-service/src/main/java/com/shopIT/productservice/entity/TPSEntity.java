@@ -1,4 +1,4 @@
-package com.shopIT.productservice.entity;
+package com.shopit.productservice.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

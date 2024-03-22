@@ -1,6 +1,6 @@
-package com.shopIT.inventoryservice.repository;
+package com.shopit.inventoryservice.repository;
 
-import com.shopIT.inventoryservice.entity.TPSEntity;
+import com.shopit.inventoryservice.entity.TPSEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

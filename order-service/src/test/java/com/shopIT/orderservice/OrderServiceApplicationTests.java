@@ -1,4 +1,4 @@
-package com.shopIT.orderservice;
+package com.shopit.orderservice;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

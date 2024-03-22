@@ -1,4 +1,4 @@
-package com.shopIT;
+package com.shopit;
 
 public class Main {
     public static void main(String[] args) {

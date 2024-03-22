@@ -1,6 +1,6 @@
-package com.shopIT.inventoryservice.repository;
+package com.shopit.inventoryservice.repository;
 
-import com.shopIT.inventoryservice.entity.InventoryEntity;
+import com.shopit.inventoryservice.entity.InventoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

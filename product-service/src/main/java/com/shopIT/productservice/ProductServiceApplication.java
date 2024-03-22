@@ -1,4 +1,4 @@
-package com.shopIT.productservice;
+package com.shopit.productservice;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

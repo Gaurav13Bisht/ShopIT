@@ -1,7 +1,7 @@
-package com.shopIT.productservice.config;
+package com.shopit.productservice.config;
 
-import com.shopIT.productservice.entity.TPSEntity;
-import com.shopIT.productservice.repository.TPSRepository;
+import com.shopit.productservice.entity.TPSEntity;
+import com.shopit.productservice.repository.TPSRepository;
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
 import io.github.bucket4j.BucketConfiguration;
@@ -18,12 +18,19 @@ import java.util.function.Supplier;
 
 @Configuration
 public class RateLimitConfig {
+
+    public final ProxyManager buckets;
+
+    private final TPSRepository tpsRepo;
+
+    private final RedissonClient redissonClient;
+
     @Autowired
-    public ProxyManager buckets;
-    @Autowired
-    private TPSRepository tpsRepo;
-    @Autowired
-    private RedissonClient redissonClient;
+    public RateLimitConfig(ProxyManager buckets, TPSRepository tpsRepo, RedissonClient redissonClient) {
+        this.buckets = buckets;
+        this.tpsRepo = tpsRepo;
+        this.redissonClient = redissonClient;
+    }
 
     public Bucket resolveBucket(String key) {
         Supplier<BucketConfiguration> configurationSupplier = getConfigSupplier(key);

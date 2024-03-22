@@ -1,7 +1,7 @@
-package com.shopIT.orderservice.config;
+package com.shopit.orderservice.config;
 
-import com.shopIT.orderservice.entity.TPSEntity;
-import com.shopIT.orderservice.repository.TPSRepository;
+import com.shopit.orderservice.entity.TPSEntity;
+import com.shopit.orderservice.repository.TPSRepository;
 
 import io.github.bucket4j.Bandwidth;
 import io.github.bucket4j.Bucket;
@@ -19,12 +19,18 @@ import java.util.function.Supplier;
 
 @Configuration
 public class RateLimitConfig {
+    public final ProxyManager buckets;
+
+    private final TPSRepository tpsRepo;
+
+    private final RedissonClient redissonClient;
+
     @Autowired
-    public ProxyManager buckets;
-    @Autowired
-    private RedissonClient redissonClient;
-    @Autowired
-    private TPSRepository tpsRepo;
+    public RateLimitConfig(ProxyManager buckets, TPSRepository tpsRepo, RedissonClient redissonClient) {
+        this.buckets = buckets;
+        this.tpsRepo = tpsRepo;
+        this.redissonClient = redissonClient;
+    }
 
     public Bucket resolveBucket(String key) {
         Supplier<BucketConfiguration> configurationSupplier = getConfigSupplier(key);
@@ -32,7 +38,9 @@ public class RateLimitConfig {
     }
 
     private Supplier<BucketConfiguration> getConfigSupplier(String key) {
-        RMapCache<String, TPSEntity> cache = redissonClient.getMapCache("tpsOrderCache");   // Cache map created under 'Cache' which will hold the username's TPSentity
+        RMapCache<String, TPSEntity> cache = redissonClient.getMapCache("tpsOrderCache"); // Cache map created under
+                                                                                          // 'Cache' which will hold
+                                                                                          // the username's TPSentity
         TPSEntity tpsEntity = cache.get(key);
 
         if (tpsEntity == null) {
@@ -47,8 +55,9 @@ public class RateLimitConfig {
         }
 
         int tps = tpsEntity.getTps();
-        Refill refill = Refill.intervally(tps, Duration.ofMinutes(1));     // Here tps defines the no. of tokens inserted every 1 min
-        Bandwidth limit = Bandwidth.classic(tps, refill);                  //Here tps is the max no. of tokens or capacity of the bucket
+        Refill refill = Refill.intervally(tps, Duration.ofMinutes(1)); // Here tps defines the no. of tokens inserted
+                                                                       // every 1 min
+        Bandwidth limit = Bandwidth.classic(tps, refill); // Here tps is the max no. of tokens or capacity of the bucket
 
         return () -> (BucketConfiguration.builder()
                 .addLimit(limit)

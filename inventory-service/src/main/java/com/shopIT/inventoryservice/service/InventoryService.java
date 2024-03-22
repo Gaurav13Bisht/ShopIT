@@ -1,10 +1,10 @@
-package com.shopIT.inventoryservice.service;
+package com.shopit.inventoryservice.service;
 
-import com.shopIT.inventoryservice.constants.InventoryConstants;
-import com.shopIT.inventoryservice.dto.InventoryDtoRequest;
-import com.shopIT.inventoryservice.dto.InventoryDtoResponse;
-import com.shopIT.inventoryservice.entity.InventoryEntity;
-import com.shopIT.inventoryservice.repository.InventoryRepository;
+import com.shopit.inventoryservice.constants.InventoryConstants;
+import com.shopit.inventoryservice.dto.InventoryDtoRequest;
+import com.shopit.inventoryservice.dto.InventoryDtoResponse;
+import com.shopit.inventoryservice.entity.InventoryEntity;
+import com.shopit.inventoryservice.repository.InventoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,11 +24,14 @@ public class InventoryService {
     }
 
     public List<InventoryDtoResponse> quantityInStock(final List<String> skuCode) {
-        // When we have multiple values of a field, and we need all the records for each field value then we can use
-        // findBy<fieldName>In() function provided by Spring data which works same as mysql's IN
+        // When we have multiple values of a field, and we need all the records for each
+        // field value then we can use
+        // findBy<fieldName>In() function provided by Spring data which works same as
+        // mysql's IN
 
-        // NOTE: When declaring new method provided by SpringData, make sure you set the correct return type of the
-        //       method in the repository interface
+        // NOTE: When declaring new method provided by SpringData, make sure you set the
+        // correct return type of the
+        // method in the repository interface
 
         return inventoryRepo.findBySkuCodeIn(skuCode).stream()
                 .map(inventoryEntity -> InventoryDtoResponse.builder()
@@ -40,18 +43,22 @@ public class InventoryService {
     }
 
     public Integer addInInventory(final InventoryDtoRequest inventoryDtoRequest) {
-        final Optional<InventoryEntity> inventoryEntityOptional = inventoryRepo.findBySkuCode(inventoryDtoRequest.getSkuCode());
+        final Optional<InventoryEntity> inventoryEntityOptional = inventoryRepo
+                .findBySkuCode(inventoryDtoRequest.getSkuCode());
         InventoryEntity inventoryEntity = null;
 
-        // If no inventory exists which contains this product then we create a new inventory with given product
+        // If no inventory exists which contains this product then we create a new
+        // inventory with given product
         if (inventoryEntityOptional.isEmpty()) {
             inventoryEntity = InventoryEntity.builder()
                     .quantity(inventoryDtoRequest.getQuantity())
                     .skuCode(inventoryDtoRequest.getSkuCode())
                     .build();
         }
-        // If the product with skuCode already exists in any inventory then we will not create new inventory for this
-        // and will simply update the quantity of already existing inventory with the product
+        // If the product with skuCode already exists in any inventory then we will not
+        // create new inventory for this
+        // and will simply update the quantity of already existing inventory with the
+        // product
         else {
             inventoryEntity = inventoryEntityOptional.get();
             Integer prevQuantity = inventoryEntity.getQuantity();

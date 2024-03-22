@@ -1,6 +1,6 @@
-package com.shopIT.productservice.repository;
+package com.shopit.productservice.repository;
 
-import com.shopIT.productservice.entity.TPSEntity;
+import com.shopit.productservice.entity.TPSEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

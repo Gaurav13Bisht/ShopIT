@@ -1,6 +1,6 @@
-package com.shopIT.orderservice.repository;
+package com.shopit.orderservice.repository;
 
-import com.shopIT.orderservice.entity.TPSEntity;
+import com.shopit.orderservice.entity.TPSEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

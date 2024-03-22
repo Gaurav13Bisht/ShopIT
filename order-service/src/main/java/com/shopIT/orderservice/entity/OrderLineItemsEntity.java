@@ -1,4 +1,4 @@
-package com.shopIT.orderservice.entity;
+package com.shopit.orderservice.entity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -9,11 +9,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Data   //This will be the equivalent of @Getters, @Setters, @ToString, @EqualsAndHashCode
+@Data // This will be the equivalent of @Getters, @Setters, @ToString,
+      // @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder   // To implement Builder Design
-@Entity  // This is used to map this class to relational DB table. @Document is used for non-relational DB like mongoDB
+@Builder // To implement Builder Design
+@Entity // This is used to map this class to relational DB table. @Document is used for
+        // non-relational DB like mongoDB
 public class OrderLineItemsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

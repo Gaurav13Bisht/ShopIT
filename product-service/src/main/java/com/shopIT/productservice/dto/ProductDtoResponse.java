@@ -1,4 +1,4 @@
-package com.shopIT.productservice.dto;
+package com.shopit.productservice.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 
-@Data   //This will be the equivalent of @Getters, @Setters, @ToString, @EqualsAndHashCode
+@Data // This will be the equivalent of @Getters, @Setters, @ToString,
+      // @EqualsAndHashCode
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder   // To implement Builder Design - search this
+@Builder // To implement Builder Design - search this
 public class ProductDtoResponse implements Serializable {
 
-    private Integer product_id;
+    private Integer productId;
 
-    private String product_name;
+    private String productName;
 
     private String description;
 

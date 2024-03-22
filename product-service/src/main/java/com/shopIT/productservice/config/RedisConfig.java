@@ -1,4 +1,4 @@
-package com.shopIT.productservice.config;
+package com.shopit.productservice.config;
 
 import com.giffing.bucket4j.spring.boot.starter.config.cache.SyncCacheResolver;
 import com.giffing.bucket4j.spring.boot.starter.config.cache.jcache.JCacheCacheResolver;
@@ -14,28 +14,30 @@ import javax.cache.CacheManager;
 import javax.cache.Caching;
 
 @Configuration
-public class RedisConfig  {
+public class RedisConfig {
 
     @Bean
-    public Config config(){
-        Config config=new Config();
+    public Config config() {
+        Config config = new Config();
         config.useSingleServer().setAddress("redis://localhost:6379");
         return config;
     }
+
     @Bean
-    public CacheManager cacheManager1(Config config){
+    public CacheManager cacheManager1(Config config) {
         CacheManager manager = Caching.getCachingProvider().getCacheManager();
         manager.createCache("cache", RedissonConfiguration.fromConfig(config));
         return manager;
     }
+
     @Bean
-    ProxyManager<String> proxyManager(CacheManager cacheManager){
+    ProxyManager<String> proxyManager(CacheManager cacheManager) {
         return new JCacheProxyManager<>(cacheManager.getCache("cache"));
     }
 
     @Bean
     @Primary
-    public SyncCacheResolver bucket4jCacheResolver(CacheManager cacheManager){
+    public SyncCacheResolver bucket4jCacheResolver(CacheManager cacheManager) {
         return new JCacheCacheResolver(cacheManager);
     }
 }
