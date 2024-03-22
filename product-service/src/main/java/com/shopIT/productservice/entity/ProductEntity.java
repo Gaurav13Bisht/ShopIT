@@ -1,7 +1,10 @@
 package com.shopIT.productservice.entity;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data   //This will be the equivalent of @Getters, @Setters, @ToString, @EqualsAndHashCode
 @NoArgsConstructor

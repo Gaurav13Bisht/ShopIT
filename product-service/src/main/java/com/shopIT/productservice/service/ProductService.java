@@ -1,33 +1,34 @@
 package com.shopIT.productservice.service;
 
+import com.shopIT.productservice.constants.ProductConstants;
 import com.shopIT.productservice.dto.ProductDtoRequest;
 import com.shopIT.productservice.dto.ProductDtoResponse;
 import com.shopIT.productservice.entity.ProductEntity;
 import com.shopIT.productservice.repository.ProductRepository;
+
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 
-@Service    // Used to represent a class as business logic handling class and also mark this as @Component so spring IOC container
-            // create and inject this class's object wherever it's needed like in controller class using @Autowired
+@Service
+// Used to represent a class as business logic handling class and also mark this as @Component so spring IOC container
+// create and inject this class's object wherever it's needed like in controller class using @Autowired
 @Slf4j     // Given by lombok for logging purpose
 public class ProductService {
 
-     private final ProductRepository productRepo;
+    private final ProductRepository productRepo;
 
     @Autowired
     public ProductService(ProductRepository productRepo) {
         this.productRepo = productRepo;
     }
 
-    public Integer addProduct(ProductDtoRequest productDtoRequest){
-        ProductEntity productEntity = productDtoReqToEntity(productDtoRequest);
-
+    public Integer addProduct(final ProductDtoRequest productDtoRequest) {
+        final ProductEntity productEntity = productDtoReqToEntity(productDtoRequest);
         productRepo.save(productEntity);
-        log.info("Created product with ID {}", productEntity.getProduct_id());   //provided by @Slf4j
+        log.info(ProductConstants.ADDED_PRODUCT + productEntity.getProduct_id());   //provided by @Slf4j
 
         return productEntity.getProduct_id();
     }
@@ -43,18 +44,16 @@ public class ProductService {
 //    @Cacheable(key = "'fixedXYZ'", value = "products")
     @Cacheable(key = "#root.methodName", value = "products")
     public List<ProductDtoResponse> getAllProducts() {
-        List<ProductEntity> productEntity = productRepo.findAll();
+        final List<ProductEntity> productEntity = productRepo.findAll();
 
         //Using Stream for conversion in less LOC
         //List<ProductDtoResponse> productDtoResponses = productEntity.stream().map(product -> productEntityToDtoRes(product)).toList();
 
         //Can be written like this:
-        List<ProductDtoResponse> productDtoResponses = productEntity.stream().map(this::productEntityToDtoRes).toList();
-
-        return productDtoResponses;
+        return productEntity.stream().map(this::productEntityToDtoRes).toList();
     }
 
-    public ProductEntity productDtoReqToEntity(ProductDtoRequest productDtoRequest){
+    public ProductEntity productDtoReqToEntity(final ProductDtoRequest productDtoRequest) {
         // Using builder() provided by lombok to implement conversion in less LOC
         return ProductEntity.builder()
                 .product_name(productDtoRequest.getProduct_name())
@@ -63,8 +62,7 @@ public class ProductService {
                 .build();
     }
 
-
-    public ProductDtoResponse productEntityToDtoRes(ProductEntity productEntity){
+    public ProductDtoResponse productEntityToDtoRes(final ProductEntity productEntity) {
         // Using builder() provided by lombok to implement conversion in less LOC
         return ProductDtoResponse.builder()
                 .product_id(productEntity.getProduct_id())
