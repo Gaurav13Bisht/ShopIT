@@ -4,6 +4,8 @@ import com.shopit.productservice.constants.ProductConstants;
 import com.shopit.productservice.dto.ProductDtoRequest;
 import com.shopit.productservice.dto.ProductDtoResponse;
 import com.shopit.productservice.entity.ProductEntity;
+import com.shopit.productservice.exception.ProductNotFoundException;
+import com.shopit.productservice.exception.ProductNotSavedException;
 import com.shopit.productservice.repository.ProductRepository;
 
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +31,14 @@ public class ProductService {
 
     public Integer addProduct(final ProductDtoRequest productDtoRequest) {
         final ProductEntity productEntity = productDtoReqToEntity(productDtoRequest);
-        productRepo.save(productEntity);
+        try{
+            productRepo.save(productEntity);
+        }
+        catch (Exception ex){
+            log.error(ProductConstants.PRODUCT_NOT_SAVED);
+            throw new ProductNotSavedException(ProductConstants.PRODUCT_NOT_SAVED);
+        }
+
         log.info(ProductConstants.ADDED_PRODUCT + productEntity.getProductId()); // provided by @Slf4j
 
         return productEntity.getProductId();
@@ -52,7 +61,11 @@ public class ProductService {
     // @Cacheable(key = "'fixedXYZ'", value = "products")
     @Cacheable(key = "#root.methodName", value = "products")
     public List<ProductDtoResponse> getAllProducts() {
-        final List<ProductEntity> productEntity = productRepo.findAll();
+        final List<ProductEntity> productEntityList = productRepo.findAll();
+
+        if(productEntityList.isEmpty()){
+            throw new ProductNotFoundException(ProductConstants.PRODUCT_NOT_FOUND);
+        }
 
         // Using Stream for conversion in less LOC
         // List<ProductDtoResponse> productDtoResponses =
@@ -60,7 +73,7 @@ public class ProductService {
         // productEntityToDtoRes(product)).toList();
 
         // Can be written like this:
-        return productEntity.stream().map(this::productEntityToDtoRes).toList();
+        return productEntityList.stream().map(this::productEntityToDtoRes).toList();
     }
 
     public ProductEntity productDtoReqToEntity(final ProductDtoRequest productDtoRequest) {

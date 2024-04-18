@@ -4,6 +4,7 @@ import com.shopit.productservice.constants.ProductConstants;
 import com.shopit.productservice.config.RateLimitConfig;
 import com.shopit.productservice.dto.ProductDtoRequest;
 import com.shopit.productservice.dto.ProductDtoResponse;
+import com.shopit.productservice.exception.RateLimitExceededException;
 import com.shopit.productservice.service.ProductService;
 
 import io.github.bucket4j.Bucket;
@@ -49,7 +50,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.CREATED).body(ProductConstants.ADDED_PRODUCT + productId);
         } else {
             log.info(String.format(ProductConstants.API_CHECK, "0", "AddProduct rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ProductConstants.RATE_LIMIT_EXCEEDED);
+            throw new RateLimitExceededException(ProductConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 
@@ -97,7 +98,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(productDtoResponse);
         } else {
             log.info(String.format(ProductConstants.API_CHECK, "0", "getAllProducts rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(new ArrayList<>());
+            throw new RateLimitExceededException(ProductConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 
@@ -112,7 +113,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(productDtoResponse);
         } else {
             log.info(String.format(ProductConstants.API_CHECK, "0", "getAllProducts rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(ProductConstants.RATE_LIMIT_EXCEEDED);
+            throw new RateLimitExceededException(ProductConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 }

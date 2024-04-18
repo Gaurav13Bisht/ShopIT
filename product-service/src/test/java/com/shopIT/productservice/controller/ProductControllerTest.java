@@ -5,8 +5,11 @@ import com.shopit.productservice.config.RateLimitConfig;
 import com.shopit.productservice.controller.ProductController;
 import com.shopit.productservice.dto.ProductDtoRequest;
 import com.shopit.productservice.dto.ProductDtoResponse;
+import com.shopit.productservice.exception.RateLimitExceededException;
 import com.shopit.productservice.service.ProductService;
 import io.github.bucket4j.*;
+import jakarta.servlet.ServletException;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -95,12 +98,10 @@ class ProductControllerTest {
 
                 Mockito.when(rateLimitConfig.resolveBucket(any(String.class))).thenReturn(bucket);
 
-                ResultActions resultAction = mockMvc.perform(post("/products/addProduct")
-                                .content(objectMapper.writeValueAsString(productDtoRequest))
-                                .contentType(MediaType.APPLICATION_JSON));
-
-                resultAction.andExpect(status().isTooManyRequests());
-                resultAction.andExpect(content().string("Rate Limit Exceeded !!"));
+                Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(post("/products/addProduct")
+                        .content(objectMapper.writeValueAsString(productDtoRequest))
+                        .contentType(MediaType.APPLICATION_JSON))
+                        );
         }
 
         @Test
@@ -152,12 +153,10 @@ class ProductControllerTest {
 
                 Mockito.when(rateLimitConfig.resolveBucket(any(String.class))).thenReturn(bucket);
 
-                ResultActions resultAction = mockMvc.perform(get("/products/getAllProducts")
+                Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(get("/products/getAllProducts")
                                 .header("X-API-VERSION", "1")
-                                .contentType(MediaType.APPLICATION_JSON));
-
-                resultAction.andExpect(status().isTooManyRequests());
-                resultAction.andExpect(content().string("[]"));
+                                .contentType(MediaType.APPLICATION_JSON))
+                );
         }
 
         @Test
@@ -209,12 +208,10 @@ class ProductControllerTest {
 
                 Mockito.when(rateLimitConfig.resolveBucket(any(String.class))).thenReturn(bucket);
 
-                ResultActions resultAction = mockMvc.perform(get("/products/getAllProducts")
+                Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(get("/products/getAllProducts")
                                 .header("X-API-VERSION", "2")
-                                .contentType(MediaType.APPLICATION_JSON));
-
-                resultAction.andExpect(status().isTooManyRequests());
-                resultAction.andExpect(content().string("Rate Limit Exceeded !!"));
+                                .contentType(MediaType.APPLICATION_JSON))
+                );
         }
 
 }

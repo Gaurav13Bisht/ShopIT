@@ -4,6 +4,7 @@ import com.shopit.inventoryservice.config.RateLimitConfig;
 import com.shopit.inventoryservice.constants.InventoryConstants;
 import com.shopit.inventoryservice.dto.InventoryDtoRequest;
 import com.shopit.inventoryservice.dto.InventoryDtoResponse;
+import com.shopit.inventoryservice.exception.RateLimitExceededException;
 import com.shopit.inventoryservice.service.InventoryService;
 import io.github.bucket4j.Bucket;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.OK).body(inventoryDtoResponseList);
         } else {
             log.info(String.format(InventoryConstants.API_CHECK, "0", "quantityInStock rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
+            throw new RateLimitExceededException(InventoryConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 
@@ -57,7 +58,7 @@ public class InventoryController {
             return ResponseEntity.status(HttpStatus.OK).body(InventoryConstants.ADDED_IN_INVENTORY + id);
         } else {
             log.info(String.format(InventoryConstants.API_CHECK, "0", "addInInventory rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(InventoryConstants.RATE_LIMIT_EXCEEDED);
+            throw new RateLimitExceededException(InventoryConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 }

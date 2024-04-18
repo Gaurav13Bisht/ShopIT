@@ -4,6 +4,7 @@ import com.shopit.inventoryservice.constants.InventoryConstants;
 import com.shopit.inventoryservice.dto.InventoryDtoRequest;
 import com.shopit.inventoryservice.dto.InventoryDtoResponse;
 import com.shopit.inventoryservice.entity.InventoryEntity;
+import com.shopit.inventoryservice.exception.InventoryNotSavedException;
 import com.shopit.inventoryservice.repository.InventoryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,6 +51,7 @@ public class InventoryService {
         // If no inventory exists which contains this product then we create a new
         // inventory with given product
         if (inventoryEntityOptional.isEmpty()) {
+            log.info(InventoryConstants.EMPTY_INVENTORY);
             inventoryEntity = InventoryEntity.builder()
                     .quantity(inventoryDtoRequest.getQuantity())
                     .skuCode(inventoryDtoRequest.getSkuCode())
@@ -65,7 +67,13 @@ public class InventoryService {
             inventoryEntity.setQuantity(prevQuantity + inventoryDtoRequest.getQuantity());
         }
 
-        inventoryRepo.save(inventoryEntity);
+        try{
+            inventoryRepo.save(inventoryEntity);
+        }
+        catch (Exception ex){
+            log.error(InventoryConstants.INVENTORY_NOT_SAVED);
+            throw new InventoryNotSavedException(InventoryConstants.INVENTORY_NOT_SAVED);
+        }
         log.info(InventoryConstants.ADDED_IN_INVENTORY + inventoryEntity.getId());
 
         return inventoryEntity.getId();

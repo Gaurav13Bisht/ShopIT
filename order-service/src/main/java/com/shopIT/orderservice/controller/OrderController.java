@@ -4,6 +4,7 @@ import com.shopit.orderservice.constants.OrderConstants;
 import com.shopit.orderservice.config.RateLimitConfig;
 import com.shopit.orderservice.dto.OrderDtoRequest;
 import com.shopit.orderservice.dto.OrderDtoResponse;
+import com.shopit.orderservice.exception.RateLimitExceededException;
 import com.shopit.orderservice.service.OrderService;
 
 import io.github.bucket4j.Bucket;
@@ -16,12 +17,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/orders")
-@CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST }, maxAge = 3600) // methods specifies that only GET and
-                                                                                 // POST methods are allowed for this
-                                                                                 // class. If a request with any other
-                                                                                 // method (e.g., PUT, DELETE) is made
-                                                                                 // to this endpoint from a different
-                                                                                 // origin, it will be rejected.
+//@CrossOrigin(methods = { RequestMethod.GET, RequestMethod.POST }, maxAge = 3600) // methods specifies that only GET and POST methods are allowed for this class. If a request with any other
+// method (e.g., PUT, DELETE) is made to this endpoint from a different origin, it will be rejected.
 @Slf4j
 public class OrderController {
 
@@ -67,7 +64,7 @@ public class OrderController {
             return ResponseEntity.status(HttpStatus.OK).body(orderDtoResponse);
         } else {
             log.info(String.format(OrderConstants.API_CHECK, "0", "getOrderDetails rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
+            throw new RateLimitExceededException(OrderConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 
@@ -78,14 +75,10 @@ public class OrderController {
         if (bucket.tryConsume(1)) {
             log.info(String.format(OrderConstants.API_CHECK, bucket.getAvailableTokens() + 1, "placeOrder allowed"));
             final Integer orderId = orderService.placeOrder(orderDtoRequest);
-            if (orderId == -2) {
-                return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(OrderConstants.INVENTORY_UNREACHABLE);
-            } else {
-                return ResponseEntity.status(HttpStatus.CREATED).body(OrderConstants.PLACED_ORDER + orderId);
-            }
+            return ResponseEntity.status(HttpStatus.CREATED).body(OrderConstants.PLACED_ORDER + orderId);
         } else {
             log.info(String.format(OrderConstants.API_CHECK, "0", "placeOrder rejected"));
-            return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(null);
+            throw new RateLimitExceededException(OrderConstants.RATE_LIMIT_EXCEEDED);
         }
     }
 }
